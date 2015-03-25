@@ -5,19 +5,18 @@
 */
 
 var mongoose = require('mongoose'),
+    Hash     = require('../Component/Hash'),
     User     = require('./Schema/User');
 
 /**
 * User create method
 */
-exports.createUser = function(callback) {
+exports.createUser = function(param, callback) {
     var userData = {
-        username: 'testAccount',
-        password: '123456',
-        email: 'test@test.com',
-        emailVerified: 1,
-        verificationToken: ''
-    };
+        username: param.username,
+        password: param.password,
+        email: param.email
+    };    
     var users = new User(userData);
     users.save(function (err) {
         if (err) {

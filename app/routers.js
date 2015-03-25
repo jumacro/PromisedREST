@@ -4,7 +4,7 @@
 var express     = require('express'),
     Passport    = require('passport'),
     Auth        = require('./Component/Oauth'),
-    Oauth2      = require('./Component/Oauth2'),    
+    //Oauth2      = require('./Component/Oauth2'),    
     GCM         = require('./Component/GCM'),
     APNS        = require('./Component/APN'),
     User        = require('./Controller/UsersController'),
@@ -27,6 +27,8 @@ router.use(function(req, res, next) {
 });
 
 /** ROUTER DECLARATION STARTS HERE **/
+
+router.post('/register', UsersController.register);
 
 router.post('/oauth/token', Oauth2.token);
 

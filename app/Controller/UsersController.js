@@ -5,6 +5,19 @@ User controller
 var User = require('../Model/User'),
     Auth = require('../Component/Auth');
 
+
+
+exports.register = function(req, res) {
+	var params = req.body;
+	User.createUser(params, function(err) {
+		if (err) {
+    		res.json({ status: 'error'});
+    	} else {
+    		res.json({ status: 'success'});
+    	}
+	});
+}
+
 exports.login = function(req, res) {
     var params = req.body;
     Auth.login(params, function(err, data) {
