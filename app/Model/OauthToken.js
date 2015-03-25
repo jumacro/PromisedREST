@@ -1,56 +1,35 @@
 /**
-* Oauth Token model
+* OauthToken schema
 * Copyright(c) 2015 Mithun Das (https://github.com/mithundas79)
 * MIT Licensed
 */
 
-var mongoose 	= require('mongoose'),
-	Token      = require('./Schema/OauthToken');
+var mongoose = require('mongoose'),
+    Schema   = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 
-/**
-* Add token
-* @param string params
-* @param function callback
-*/
-exports.addToken = function(params, callback) {
-	
-	var newToken = new Token(params);
+var OauthTokenSchema = new Schema({
+    _id                 : ObjectId,
+    userId            : {
+        type: String, 
+        required: true
+    },
+    clientId            : {
+        type: String, 
+        required: true
+    },
+    token                : {
+        type: String, 
+        required: true
+    },
+    created         : {
+        type: Date,
+        default: Date.now
+    },
+    modified        : {
+        type: Date,
+        default: Date.now
+    }
+});
 
-	newToken.save(function(err) {
-		// we've saved the token into the db here
-  		callback(err);
-	});
-}
-
-/**
-* Match the income token with the authorized token
-* @param string token
-* @param function callback
-*/
-exports.checkToken = function(token, callback) {
-	Token.findOne({
-		token: token
-	}, function(err, data) {
-		callback(err, data);
-	});
-}
-
-/**
-* Remove token
-* @param string userId
-* @param string clientId
-* @param function callback
-*/
-exports.removeToken = function(token, callback) {
-	Token.remove({
-		token: token
-	}, function(err) {
-		callback(err);
-	});
-}
-
-exports.removeTokenByParam = function(param, callback) {
-	Token.remove(param, function(err) {
-		callback(err);
-	});
-}
+module.exports = mongoose.model('OauthToken', OauthTokenSchema);

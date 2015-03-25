@@ -1,21 +1,42 @@
 /**
-* Oauth Client model
+* OauthClient schema
 * Copyright(c) 2015 Mithun Das (https://github.com/mithundas79)
 * MIT Licensed
 */
 
-var mongoose 	= require('mongoose'),
-	Client      = require('./Schema/OauthClient');
+var mongoose = require('mongoose'),
+    Schema   = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 
-/**
-* Check a particular client by the stored client Id
-* @param string clientId
-* @param function callback
-*/
-exports.checkClient = function(clientId, callback) {
-	Client.findOne({
-		_clientId: clientId
-	}, function(err, data) {
-		callback(err, data);
-	});
-}
+var OauthClientSchema = new Schema({
+    _id                 : ObjectId,
+    name                : {
+        type: String, 
+        required: true,
+        index: {
+            unique: true
+        }
+    },
+    userId             : {
+        type: String,
+        required: true
+    },
+    clientId            : {
+        type: String, 
+        required: true
+    },
+    clientSecret        : {
+        type: String, 
+        required: true
+    },
+    created         : {
+        type: Date,
+        default: Date.now
+    },
+    modified        : {
+        type: Date,
+        default: Date.now
+    }
+});
+
+module.exports = mongoose.model('OauthClient', OauthClientSchema);

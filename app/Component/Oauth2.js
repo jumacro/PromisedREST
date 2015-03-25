@@ -1,147 +1,198 @@
-/**
-* Oauth v2.0 -- Authentication class
-*/
-var Oauth2orize = require('oauth2orize'),
-    Passport = require('passport'),
-    Crypto = require('crypto'),
-    Config = require('../Config/Config'),
-    Hashes = require('jshashes'),
-    Client = require('../Model/OauthClient'),
-    AccessToken = require('../Model/OauthToken'),
-    RefreshToken = require('../Model/OauthRefreshToken'),
-    User = require('../Model/User');
+// Load required packages
+var Oauth2orize = require('oauth2orize')
+var User = require('../Model/User');
+var Client = require('../Model/OauthClient');
+var Token = require('../Model/OauthToken');
+var RefreshToken = require('../Model/OauthRefreshToken');
 
-// create OAuth 2.0 server
+/** Create OAuth 2.0 server */
 var Server = Oauth2orize.createServer();
 
-// Exchange username & password for access token.
-Server.exchange(Oauth2orize.exchange.password(function(client, username, password, scope, done) {
-    User.readUserByUsername(username, function(err, user) {
-        if (err) {
-            return done(err);
-        }
-        if (!user) {
-            return done(null, false);
-        }
-        var password_hash = new Hashes.SHA256().hex_hmac(Config.encrypt_key, password);
-        if (user.password !== password_hash) {
-            return done(null, false);
-        }
+/** 
+* Register serialialization and deserialization functions.
+*
+* When a client redirects a user to user authorization endpoint, an
+* authorization transaction is initiated.  To complete the transaction, the
+* user must authenticate and approve the authorization request.  Because this
+* may involve multiple HTTP request/response exchanges, the transaction is
+* stored in the session.
+*
+* An application must supply serialization functions, which determine how the
+* client object is serialized into the session.  Typically this will be a
+* simple matter of serializing the client's ID, and deserializing by finding
+* the client by ID from the database.
+*/
 
-        RefreshToken.removeToken(user.userId, client.clientId, function(err) {
-            if (err)
-                return done(err);
-        });
-        var accessTokenParams = {
-            _userId : user.userId,
-            _clientId : client.clientId
-        };
-        AccessToken.removeTokenByParam(accessTokenParams, function(err) {
-            if (err)
-                return done(err);
-        });
+Server.serializeClient(function(client, callback) {
+  return callback(null, client._id);
+});
 
-        var tokenValue = Crypto.randomBytes(32).toString('base64');
-        var refreshTokenValue = Crypto.randomBytes(32).toString('base64');
-        //Add token
-        var accessTokenNVP = {
-            token: tokenValue, 
-            _clientId: client.clientId, 
-            _userId: user.id
-        };
-        var token = AccessToken.addToken(accessTokenNVP, function(err) {
-            if (err) {
-                return done(err);
-            }
-            done(null, tokenValue, refreshTokenValue, {'expires_in': Config.security.tokenLife});
-        });
-        var info = {scope: '*'};
-        //Add refresh token
-        var refreshAccessTokenNVP = {
-            token: refreshTokenValue, 
-            _clientId: client.clientId, 
-            _userId: user.id
-        };
-        var refreshToken = RefreshToken.addToken(refreshAccessTokenNVP, function(err) {
-            if (err) {
-                return done(err);
-            }
-        });
+Server.deserializeClient(function(id, callback) {
+  Client.findOne({ _id: id }, function (err, client) {
+    if (err) { return callback(err); }
+    return callback(null, client);
+  });
+});
 
-    });
+/** 
+* Register supported grant types.
+*
+* OAuth 2.0 specifies a framework that allows users to grant client
+* applications limited access to their protected resources.  It does this
+* through a process of the user granting access, and the client exchanging
+* the grant for an access token.
+*
+* Grant authorization codes.  The callback takes the `client` requesting
+* authorization, the `redirectUri` (which is used as a verifier in the
+* subsequent exchange), the authenticated `user` granting access, and
+* their response, which contains approved scope, duration, etc. as parsed by
+* the application.  The application issues a code, which is bound to these
+* values, and will be exchanged for an access token.
+*/
+
+Server.grant(Oauth2orize.grant.code(function(client, redirectUri, user, ares, callback) {
+  // Create a new authorization code
+  var RefreshToken = new RefreshToken({
+    token: uid(16),
+    clientId: client._id,
+    redirectUri: redirectUri,
+    userId: user._id
+  });
+
+  // Save the auth code and check for errors
+  RefreshToken.save(function(err) {
+    if (err) { return callback(err); }
+
+    callback(null, code.value);
+  });
 }));
 
-// Exchange refreshToken for access token.
-Server.exchange(Oauth2orize.exchange.refreshToken(function(client, refreshToken, scope, done) {
+/** 
+* Exchange authorization codes for access tokens.  The callback accepts the
+* `client`, which is exchanging `code` and any `redirectUri` from the
+* authorization request for verification.  If these values are validated, the
+* application issues an access token on behalf of the user who authorized the
+* code.
+*/
 
+Server.exchange(Oauth2orize.exchange.code(function(client, code, redirectUri, callback) {
+  RefreshToken.findOne({ token: code }, function (err, authCode) {
+    if (err) { return callback(err); }
+    if (authCode === undefined) { return callback(null, false); }
+    if (client._id.toString() !== authCode.clientId) { return callback(null, false); }
+    if (redirectUri !== authCode.redirectUri) { return callback(null, false); }
 
+    // Delete auth code now that it has been used
+    authCode.remove(function (err) {
+      if(err) { return callback(err); }
 
-    //remove this whole part
-    RefreshToken.readToken(refreshToken, function(err, token) {
-        if (err) {
-            return done(err);
-        }
-        if (!token) {
-            return done(null, false);
-        }
-        if (!token) {
-            return done(null, false);
-        }
+      // Create a new access token
+      var token = new Token({
+        token: uid(256),
+        clientId: authCode.clientId,
+        userId: authCode.userId
+      });
 
-        User.readUser(token.userId, function(err, user) {
-            if (err) {
-                return done(err);
-            }
-            if (!user) {
-                return done(null, false);
-            }
+      // Save the access token and check for errors
+      token.save(function (err) {
+        if (err) { return callback(err); }
 
-            RefreshToken.removeToken(user.userId, client.clientId, function(err) {
-                if (err)
-                    return done(err);
-            });
-            var accessTokenParams = {
-                _userId : user.userId,
-                _clientId : client.clientId
-            };
-            AccessToken.removeTokenByParam(accessTokenParams, function(err) {
-                if (err)
-                    return done(err);
-            });
-
-            var tokenValue = Crypto.randomBytes(32).toString('base64');
-            var refreshTokenValue = Crypto.randomBytes(32).toString('base64');
-            //Add token
-            var accessTokenNVP = {
-                token: tokenValue, 
-                _clientId: client.clientId, 
-                _userId: user.id
-            };
-            var token = AccessToken.addToken(accessTokenNVP, function(err) {
-                if (err) {
-                    return done(err);
-                }
-                done(null, tokenValue, refreshTokenValue, {'expires_in': Config.security.tokenLife});
-            });
-            var info = {scope: '*'};
-            //Add refresh token
-            var refreshAccessTokenNVP = {
-                token: refreshTokenValue, 
-                _clientId: client.clientId, 
-                _userId: user.id
-            };
-            var refreshToken = RefreshToken.addToken(refreshAccessTokenNVP, function(err) {
-                if (err) {
-                    return done(err);
-                }
-            });
-        });
+        callback(null, token);
+      });
     });
+  });
 }));
 
-// token endpoint
-exports.token = [
-    Passport.authenticate(['basic','oauth2-client-password'], {session: false}),
-    Server.token(),
-    Server.errorHandler()
+/**.
+* User authorization endpoint
+*
+* `authorization` middleware accepts a `validate` callback which is
+* responsible for validating the client making the authorization request.  In
+* doing so, is recommended that the `redirectUri` be checked against a
+* registered value, although security requirements may vary accross
+* implementations.  Once validated, the `callback` callback must be invoked with
+* a `client` instance, as well as the `redirectUri` to which the user will be
+* redirected after an authorization decision is obtained.
+*
+* This middleware simply initializes a new authorization transaction.  It is
+* the application's responsibility to authenticate the user and render a dialog
+* to obtain their approval (displaying details about the client requesting
+* authorization).  We accomplish that here by routing through `ensureLoggedIn()`
+* first, and rendering the `dialog` view. 
+*/
+
+exports.authorization = [
+  Server.authorization(function(clientId, redirectUri, callback) {
+
+    Client.findOne({ clientId: clientId }, function (err, client) {
+      if (err) { return callback(err); }
+
+      return callback(null, client, redirectUri);
+    });
+  }),
+  function(req, res){
+    res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client });
+  }
 ]
+
+/** 
+* User decision endpoint
+*
+* `decision` middleware processes a user's decision to allow or deny access
+* requested by a client application.  Based on the grant type requested by the
+* client, the above grant middleware configured above will be invoked to send
+* a response.
+*/
+exports.decision = [
+  Server.decision()
+]
+
+/** 
+* Token endpoint
+*
+* `token` middleware handles client requests to exchange authorization grants
+* for access tokens.  Based on the grant type being exchanged, the above
+* exchange middleware will be invoked to handle the request.  Clients must
+* authenticate when making requests to this endpoint.
+*/
+
+exports.token = [
+  Server.token(),
+  Server.errorHandler()
+]
+
+/**
+ * Return a unique identifier with the given `len`.
+ *
+ *     utils.uid(10);
+ *     // => "FDaS435D2z"
+ *
+ * @param {Number} len
+ * @return {String}
+ * @api private
+ */
+function uid (len) {
+  var buf = []
+    , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    , charlen = chars.length;
+
+  for (var i = 0; i < len; ++i) {
+    buf.push(chars[getRandomInt(0, charlen - 1)]);
+  }
+
+  return buf.join('');
+};
+
+/**
+ * Return a random int, used by `utils.uid()`
+ *
+ * @param {Number} min
+ * @param {Number} max
+ * @return {Number}
+ * @api private
+ */
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+

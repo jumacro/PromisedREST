@@ -1,87 +1,82 @@
 /**
-* User model
+* User schema
 * Copyright(c) 2015 Mithun Das (https://github.com/mithundas79)
 * MIT Licensed
 */
 
 var mongoose = require('mongoose'),
-    Hash     = require('../Component/Hash'),
-    User     = require('./Schema/User');
+    Bcrypt   = require('bcrypt-nodejs'),
+    Schema   = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
+
+var UserSchema = new Schema({
+    _id					: ObjectId,
+    username			: {
+    	type: String, 
+    	required: true,
+    	index: {
+    		unique: true
+    	}
+    },
+    password			: {
+    	type: String, 
+    	required: true
+    },
+    email				: {
+    	type: String,
+    	required: true,
+    	trim: true,
+    	index: {
+    		unique: true,
+    		sparse: true
+    	}
+    },
+    emailVerified	    : {
+    	type: Boolean,
+        default: 1
+    },
+    verificationToken	: {
+    	type: String,
+        default: null
+    },
+    created			: {
+        type: Date,
+        default: Date.now
+    },
+    modified		: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 /**
-* User create method
+Before save argument for the user schema...
+Hashes the password before saving
 */
-exports.createUser = function(param, callback) {
-    var userData = {
-        username: param.username,
-        password: param.password,
-        email: param.email
-    };    
-    var users = new User(userData);
-    users.save(function (err) {
-        if (err) {
-            callback(err)
-        }else{
-            callback(false)
-        }
+UserSchema.pre('save', function(callback) {
+  var user = this;
+
+  // Break out if the password hasn't changed
+  if (!user.isModified('password')) return callback();
+
+  // Password changed so we need to hash it
+  bcrypt.genSalt(5, function(err, salt) {
+    if (err) return callback(err);
+
+    bcrypt.hash(user.password, salt, null, function(err, hash) {
+      if (err) return callback(err);
+      user.password = hash;
+      callback();
     });
-}
-
-
-
+  });
+});
 /**
-* User create method
+Schema method to verify input password
 */
-exports.updateUser = function(callback) {
-    var userData = {
-        username: 'testAccount',
-        password: '123456',
-        email: 'test@test.com',
-        emailVerified: 1,
-        verificationToken: ''
-    };
-    var users = new User(userData);
-    users.save(function (err) {
-        if (err) {
-            callback(err)
-        }else{
-            callback(false)
-        }
-    });
-}
-
-/**
-* Delete method
-* @param function callback
-*/
-exports.deleteUser = function(callback) {
-    User.findOneAndRemove({
-        _id : id
-    }, function(err) {
-        callback(err);
-    });
-}
-
-/**
-* Read users (by Id)
-* @params mixed userId
-* @params function callback
-*/
-exports.readUser = function(userId, callback) {
-    User.findById(userId, function(err, data) {
-        callback(err, data);
-    });
-}
-
-/**
-* Read users (by Username)
-* @params string username
-* @params function callback
-*/
-exports.readUserByUsername = function(username, callback) {
-    User.findOne({
-        username: username
-    }, function(err, data) {
-        callback(err, data);
-    });
-}
+UserSchema.methods.verifyPassword = function(password, callback) {
+  bcrypt.compare(password, this.password, function(err, isMatch) {
+    if (err) return callback(err);
+    callback(null, isMatch);
+  });
+};
+module.exports = mongoose.model('User', UserSchema);

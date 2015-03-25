@@ -2,34 +2,31 @@
 User controller
 */
 
-var User = require('../Model/User'),
-    Auth = require('../Component/Auth');
+var User = require('../Model/User');
 
 
 
-exports.register = function(req, res) {
-	var params = req.body;
-	User.createUser(params, function(err) {
-		if (err) {
-    		res.json({ status: 'error'});
-    	} else {
-    		res.json({ status: 'success'});
-    	}
-	});
-}
+// Create endpoint /api/users for POST
+exports.postUsers = function(req, res) {
+  var user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
 
-exports.login = function(req, res) {
-    var params = req.body;
-    Auth.login(params, function(err, data) {
-    	if (err) {
-    		res.json({ status: 'error', data: false});
-    	} else {
-    		res.json({ status: 'success', data: data});
-    	}
-    });
-    
-}
+  user.save(function(err) {
+    if (err)
+      res.send(err);
 
-exports.welcome = function(req, res) {
-	res.json({ status: 'success', message: 'Welcome to our api'});
-}
+    res.json({ message: 'New beer drinker added to the locker room!' });
+  });
+};
+
+// Create endpoint /api/users for GET
+exports.getUsers = function(req, res) {
+  User.find(function(err, users) {
+    if (err)
+      res.send(err);
+
+    res.json(users);
+  });
+};

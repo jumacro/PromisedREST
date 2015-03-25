@@ -3,11 +3,12 @@
 **/
 var express     = require('express'),
     Passport    = require('passport'),
-    Auth        = require('./Component/Oauth'),
-    //Oauth2      = require('./Component/Oauth2'),    
+    Oauth2      = require('./Component/Oauth2'),  
+    Auth        = require('./Component/Auth'),  
     GCM         = require('./Component/GCM'),
     APNS        = require('./Component/APN'),
     User        = require('./Controller/UsersController'),
+    Client      = require('./Component/OauthClient'),
     app         = express();
 
 /** Created an instance of the express Router **/
@@ -28,17 +29,24 @@ router.use(function(req, res, next) {
 
 /** ROUTER DECLARATION STARTS HERE **/
 
-router.post('/register', UsersController.register);
+/** Create endpoint handlers for /users */
+router.route('/users')
+  .post(User.postUsers)
+  .get(Auth.isAuthenticated, User.getUsers);
 
-router.post('/oauth/token', Oauth2.token);
+/** Create endpoint handlers for /clients */
+router.route('/clients')
+  .post(Auth.isAuthenticated, Client.postClients)
+  .get(Auth.isAuthenticated, Client.getClients);
 
-router.post('/gcm', GCM.sendGCM);
-router.post('/apns', APNS.sendAPNS);
+/** Create endpoint handlers for oauth2 authorize */
+router.route('/oauth2/authorize')
+  .get(Auth.isAuthenticated, Oauth2.authorization)
+  .post(Auth.isAuthenticated, Oauth2.decision);
 
-router.post('/user/login', Passport.authenticate('bearer', {session: false}), User.login);
-
-
-router.get('/', Passport.authenticate('bearer', {session: false}), User.welcome);
+/** Create endpoint handlers for oauth2 token */
+router.route('/oauth2/token')
+  .post(Auth.isClientAuthenticated, Oauth2.token);
 
 
 /** Expose router to other modules **/
