@@ -28,10 +28,13 @@ Server.serializeClient(function(client, callback) {
 });
 
 Server.deserializeClient(function(id, callback) {
-  Client.findOne({ _id: id }, function (err, client) {
-    if (err) { return callback(err); }
-    return callback(null, client);
-  });
+    Client.findOne({ _id: id }, function (err, client) {
+        if (err) { 
+            return callback(err); 
+        } else {
+            return callback(null, client);  
+        }
+    });
 });
 
 /** 
@@ -51,20 +54,22 @@ Server.deserializeClient(function(id, callback) {
 */
 
 Server.grant(Oauth2orize.grant.code(function(client, redirectUri, user, ares, callback) {
-  // Create a new authorization code
-  var RefreshToken = new RefreshToken({
-    token: uid(16),
-    clientId: client._id,
-    redirectUri: redirectUri,
-    userId: user._id
-  });
+    // Create a new authorization code
+    var RefreshToken = new RefreshToken({
+        token: uid(16),
+        clientId: client._id,
+        redirectUri: redirectUri,
+        userId: user._id
+    });
 
-  // Save the auth code and check for errors
-  RefreshToken.save(function(err) {
-    if (err) { return callback(err); }
-
-    callback(null, code.value);
-  });
+    // Save the auth code and check for errors
+    RefreshToken.save(function(err) {
+    if (err) { 
+        return callback(err); 
+    } else {
+        callback(null, RefreshToken.token);
+    }
+    });
 }));
 
 /** 
@@ -77,28 +82,39 @@ Server.grant(Oauth2orize.grant.code(function(client, redirectUri, user, ares, ca
 
 Server.exchange(Oauth2orize.exchange.code(function(client, code, redirectUri, callback) {
   RefreshToken.findOne({ token: code }, function (err, authCode) {
-    if (err) { return callback(err); }
-    if (authCode === undefined) { return callback(null, false); }
-    if (client._id.toString() !== authCode.clientId) { return callback(null, false); }
-    if (redirectUri !== authCode.redirectUri) { return callback(null, false); }
-
+    if (err) { 
+        return callback(err); 
+    } else {
+        if (authCode === undefined) { 
+            return callback(null, false); 
+        } else {
+            if (client._id.toString() !== authCode.clientId) { 
+                return callback(null, false); 
+            } else {
+                if (redirectUri !== authCode.redirectUri) { return callback(null, false); }
+            }
+        }
+    }
     // Delete auth code now that it has been used
     authCode.remove(function (err) {
-      if(err) { return callback(err); }
-
-      // Create a new access token
-      var token = new Token({
-        token: uid(256),
-        clientId: authCode.clientId,
-        userId: authCode.userId
-      });
-
-      // Save the access token and check for errors
-      token.save(function (err) {
-        if (err) { return callback(err); }
-
-        callback(null, token);
-      });
+        if(err) { 
+            return callback(err); 
+        } else {
+            // Create a new access token
+            var token = new Token({
+                token: uid(256),
+                clientId: authCode.clientId,
+                userId: authCode.userId
+            });    
+        }
+        // Save the access token and check for errors
+        token.save(function (err) {
+            if (err) { 
+                return callback(err); 
+            } else {
+                callback(null, token);
+            }        
+        });
     });
   });
 }));
@@ -122,17 +138,18 @@ Server.exchange(Oauth2orize.exchange.code(function(client, code, redirectUri, ca
 */
 
 exports.authorization = [
-  Server.authorization(function(clientId, redirectUri, callback) {
-
-    Client.findOne({ clientId: clientId }, function (err, client) {
-      if (err) { return callback(err); }
-
-      return callback(null, client, redirectUri);
-    });
-  }),
-  function(req, res){
-    res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client });
-  }
+    Server.authorization(function(clientId, redirectUri, callback) {
+        Client.findOne({ clientId: clientId }, function (err, client) {
+            if (err) { 
+                return callback(err); 
+            } else {
+                return callback(null, client, redirectUri);
+            }          
+        });
+    }),
+    function(req, res){
+        res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client });
+    }
 ]
 
 /** 
@@ -144,7 +161,7 @@ exports.authorization = [
 * a response.
 */
 exports.decision = [
-  Server.decision()
+    Server.decision()
 ]
 
 /** 
@@ -157,8 +174,8 @@ exports.decision = [
 */
 
 exports.token = [
-  Server.token(),
-  Server.errorHandler()
+    Server.token(),
+    Server.errorHandler()
 ]
 
 /**
@@ -172,15 +189,15 @@ exports.token = [
  * @api private
  */
 function uid (len) {
-  var buf = []
+    var buf = []
     , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     , charlen = chars.length;
 
-  for (var i = 0; i < len; ++i) {
-    buf.push(chars[getRandomInt(0, charlen - 1)]);
-  }
+    for (var i = 0; i < len; ++i) {
+        buf.push(chars[getRandomInt(0, charlen - 1)]);
+    }
 
-  return buf.join('');
+    return buf.join('');
 };
 
 /**
@@ -193,6 +210,6 @@ function uid (len) {
  */
 
 function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 

@@ -9,7 +9,6 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var OauthClientSchema = new Schema({
-    _id                 : ObjectId,
     name                : {
         type: String, 
         required: true,

@@ -9,7 +9,6 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var OauthRefreshTokenSchema = new Schema({
-    _id                 : ObjectId,
     userId             : {
         type: String, 
         required: true

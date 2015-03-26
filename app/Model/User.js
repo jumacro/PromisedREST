@@ -10,7 +10,6 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var UserSchema = new Schema({
-    _id					: ObjectId,
     username			: {
     	type: String, 
     	required: true,
@@ -60,10 +59,10 @@ UserSchema.pre('save', function(callback) {
   if (!user.isModified('password')) return callback();
 
   // Password changed so we need to hash it
-  bcrypt.genSalt(5, function(err, salt) {
+  Bcrypt.genSalt(5, function(err, salt) {
     if (err) return callback(err);
 
-    bcrypt.hash(user.password, salt, null, function(err, hash) {
+    Bcrypt.hash(user.password, salt, null, function(err, hash) {
       if (err) return callback(err);
       user.password = hash;
       callback();
@@ -74,7 +73,7 @@ UserSchema.pre('save', function(callback) {
 Schema method to verify input password
 */
 UserSchema.methods.verifyPassword = function(password, callback) {
-  bcrypt.compare(password, this.password, function(err, isMatch) {
+  Bcrypt.compare(password, this.password, function(err, isMatch) {
     if (err) return callback(err);
     callback(null, isMatch);
   });

@@ -6,6 +6,7 @@ var express         = require('express'),
     logger          = require('morgan'),
     cookieParser    = require('cookie-parser'),
     bodyParser      = require('body-parser'),
+    session         = require('express-session'),
     passport        = require('passport');
 
 var app             = express();
@@ -21,9 +22,20 @@ mongoose.connect('mongodb://localhost/fondoo');
 /** load the logger **/
 app.use(logger('dev'));
 /** load the body parser middleware **/
-app.use(bodyParser.json());
+
+// Use the body-parser package in our application
+/*app.use(bodyParser.urlencoded({
+  extended: true
+}));*/
+
+// Use express session support since OAuth2orize requires it
+app.use(session({ 
+  secret: 'pDblTMZaFam59d@F9c#V1G9UEL17)Odz',
+  saveUninitialized: true,
+  resave: true
+}));
 /** load the url endoers middleware **/
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 /** load the cookie parser middleware **/
 app.use(cookieParser());
 /** Initialize Passport.js **/

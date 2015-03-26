@@ -8,26 +8,29 @@ var express     = require('express'),
     GCM         = require('./Component/GCM'),
     APNS        = require('./Component/APN'),
     User        = require('./Controller/UsersController'),
-    Client      = require('./Component/OauthClient'),
+    Client      = require('./Controller/OauthController'),
     app         = express();
 
 /** Created an instance of the express Router **/
 var router = express.Router(); 
 
-/** Initialize Passport.js **/
-app.use(Passport.initialize());
-
-/** Middleware to use for all requests **/
+// middleware to use for all requests
 router.use(function(req, res, next) {
-    /** Set up the Access Control Headers **/
+    // do logging
     res.setHeader('Access-Control-Allow-Headers', 'Authorization');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    console.log('Access Control Headers are set.'); //must be removed from production
+    console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
 });
 
+/** Initialize Passport.js **/
+app.use(Passport.initialize());
+
+
+
 /** ROUTER DECLARATION STARTS HERE **/
+router.get('/', User.welcome);
 
 /** Create endpoint handlers for /users */
 router.route('/users')
