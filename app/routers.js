@@ -35,8 +35,17 @@ router.get('/', User.welcome);
 /** Create endpoint handlers for /users */
 router.route('/users')
   .post(User.postUsers)
-  .get(Auth.isAuthenticated, User.getUsers);
+  .get(User.getUsers);
 
+router.route('/user/:id')
+  .get(User.getUser)
+  .put(User.updateUser)
+  .delete(User.deleteUser);
+
+
+/**
+* Part to authenticate app via a three-legged authentication with Oauth2.0
+*/
 /** Create endpoint handlers for /clients */
 router.route('/clients')
   .post(Auth.isAuthenticated, Client.postClients)
