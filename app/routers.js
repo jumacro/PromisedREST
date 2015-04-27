@@ -37,6 +37,12 @@ router.route('/')
   .get(Auth.isAuthenticated, User.welcome);
 
 /** Create endpoint handlers for /users */
+router.route('/login')
+  .post(Auth.isAuthenticated, User.login);
+
+router.route('/logout')
+  .get(Auth.isAuthenticated, User.login);
+
 router.route('/users')
   .post(Auth.isAuthenticated, User.postUsers)
   .get(Auth.isAuthenticated, User.getUsers);

@@ -92,3 +92,34 @@ exports.deleteUser = function(req, res) {
         }
     });
 }
+
+exports.login = function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    User.findOne({ username: username }, function (err, user) {
+        if (err) { 
+            res.json(err);
+        } else {
+            if(!user) {
+                res.json({ error: 400, message: 'Wrong username/password'});
+            }  else {
+                user.verifyPassword(password, function(err, isMatch) {
+                    if (err) { 
+                        res.json(false, err);
+                    } else {
+                        if (!isMatch) { 
+                            res.json({ error: 400, message: 'Wrong username/password'});
+                        } else {
+                            // Success
+                            res.json({ error: 0, message: 'Login sucess', data: user});
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
+exports.logout = function(req, res) {
+    res.json({ message: 'User is logged out' });
+}
