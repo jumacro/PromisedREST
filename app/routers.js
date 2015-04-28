@@ -3,21 +3,21 @@
 **/
 var express     = require('express'),
     Passport    = require('passport'),
-    Auth        = require('./Component/Auth'),  
+    Auth        = require('./Component/Auth'),
     GCM         = require('./Component/GCM'),
     APNS        = require('./Component/APN'),
     User        = require('./Controller/UsersController'),
     app         = express();
 
 /** Created an instance of the express Router **/
-var router = express.Router(); 
+var router = express.Router();
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
     // do logging
-    res.setHeader('Access-Control-Allow-Headers', 'APIKEY');
+    res.setHeader('Access-Control-Allow-Headers', 'APIKEY, Content-Type');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
     console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
 });
