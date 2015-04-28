@@ -41,7 +41,7 @@ router.route('/login')
   .post(Auth.isAuthenticated, User.login);
 
 router.route('/logout')
-  .get(Auth.isAuthenticated, User.login);
+  .get(Auth.isAuthenticated, User.logout);
 
 router.route('/users')
   .post(Auth.isAuthenticated, User.postUsers)

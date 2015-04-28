@@ -121,5 +121,5 @@ exports.login = function(req, res) {
 }
 
 exports.logout = function(req, res) {
-    res.json({ message: 'User is logged out' });
+    res.json({ error: 0, message: 'User is logged out' });
 }
