@@ -17,7 +17,7 @@ router.use(function(req, res, next) {
     // do logging
     res.setHeader('Access-Control-Allow-Headers', 'APIKEY, Content-Type');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
     console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
 });
