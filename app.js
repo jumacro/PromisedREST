@@ -21,8 +21,9 @@ mongoose.connect('mongodb://' + Config.host + '/' + Config.database);
 app.use(logger('dev'));
 /** load the body parser middleware **/
 
-/** load the url endoers middleware **/
-app.use(bodyParser());
+// configure body parser
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 /** load the cookie parser middleware **/
 app.use(cookieParser());

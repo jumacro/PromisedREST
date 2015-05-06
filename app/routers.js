@@ -47,7 +47,7 @@ router.route('/users')
   .post(Auth.isAuthenticated, User.postUsers)
   .get(Auth.isAuthenticated, User.getUsers);
 
-router.route('/user/:id')
+router.route('/users/:id')
   .get(Auth.isAuthenticated, User.getUser)
   .put(Auth.isAuthenticated, User.updateUser)
   .delete(Auth.isAuthenticated, User.deleteUser);
