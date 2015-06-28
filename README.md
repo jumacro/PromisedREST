@@ -34,8 +34,9 @@ http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/
 
 ### Authentication:-
 
-We use the passport-localapikey-update module to secure our app via a static apiKey. For more info https://www.npmjs.com/package/passport-localapikey-update
-We store our apikey within the app/Config/Config.js
+We use the Basic Auth method to secure our app.
+We store our appId and appSecret within the app/Config/Config.js
+Use the app key as username and appSecret as password to authenticate rhe API.
 
 
 ## Installation and Run
@@ -43,7 +44,7 @@ We store our apikey within the app/Config/Config.js
 
 1) Clone the repositary 
 ```sh
-git clone https://github.com/jamesdevries/Fondoo-Node-API.git
+git clone https://github.com/jumacro/RestfulNode.git
 ```
 
 2) Go to your project root. Run the package installer
@@ -57,23 +58,5 @@ npm install
 npm start
 ```
 Browse your api as http://localhost:3000/api/v1.0 you will see a welcome message
-
-## Use the API
-
-Please follow the Fondoo-Node-API >> app >> router.js you will understand the end-points.
-
-*** The apikey should always be passed as a header for all request to be Authorized. 
-Field name: apikey
-Value: The string you stored in your Config.js as "apiKey"
-
-1) POST users
-http://localhost:3000/api/v1.0/users
-
-Use the POSTMAN Google Chrome App with Normal tab and x-www-form-urlencoded method to submit the form. Pass the header as mentioned above.
-
-2) GET users
-http://localhost:3000/api/v1.0/users
-
-Use the POSTMAN Google Chrome App with Normal tab, pass the header as mentioned above, you will get to see the results.
 
 =====
