@@ -9,6 +9,6 @@ var crypto = require('crypto'),
 **/
 
 exports.generateHash = function(pwd, callback){
-	var hash = crypto.createHmac(Config.encrypt_type).update(pwd).digest(Config.encrypt_key);
+	var hash = crypto.createHmac(Config.security.encryptions.encrypt_type).update(pwd).digest(Config.security.encryptions.encrypt_key);
   	callback(hash);
 }

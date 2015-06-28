@@ -1,30 +1,34 @@
 /**
-* Oauth Authentication system
+* Authentication --- Fondoo API
+* The Auth system uses the Passport.Basic Strategy
+* @version 1.1
 */
 /**
 * Passport loaded with its Strategies
 */
 var Passport = require('passport'),
-    LocalAPIKeyStrategy = require('passport-localapikey-update').Strategy;
-var Config = require('../Config/Config');
+    //LocalAPIKeyStrategy = require('passport-localapikey-update').Strategy;
+    BasicStrategy = require('passport-http').BasicStrategy;
+var Config = require('../Config/Config'); //Config loaded
 
 /**
 * Create passport authentication -- Register Basic Strategy
 */
-Passport.use(new LocalAPIKeyStrategy(
-	function(apikey, done) {
-		console.log(apikey + "APIKEY");
-		
-		if(Config.apiKey === apikey) {
-			return done(null, true);
-		} else {
-			return done({ message: 'Unknown apikey : ' + apikey });
-		}
-	}
+Passport.use(new BasicStrategy(
+  function(username, password, done) {
+    if(Config.security.api.appId === username) {
+        if(Config.security.api.appSecret === password) {
+            return done(null, true);
+        } else {
+            return done(null, false);
+        }
+    } else {
+        return done(null, false);
+    }
+  }
 ));
 
-exports.isAuthenticated = Passport.authenticate('localapikey', { 
-	session: false, 
-	failureRedirect: '/api/' + Config.apiVersion + '/unauthorized',
-	failureFlash: true
-});
+/**
+* Export the Authentication request handler
+*/
+exports.isAuthenticated = Passport.authenticate('basic', { session : false });

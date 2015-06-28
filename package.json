@@ -1,5 +1,5 @@
 {
-  "name": "RestfulNode",
+  "name": "Fondoo-Node-API",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,23 +7,37 @@
   },
   "dependencies": {
     "apn": "*",
-    "body-parser": "~1.10.2",
+    "async": "^1.0.0",
     "bcrypt-nodejs": "*",
+    "body-parser": "~1.10.2",
+    "bson": "^0.4.2",
+    "cloudinary": "^1.2.1",
     "connect-ensure-login": "*",
+    "connect-multiparty": "^1.2.5",
     "cookie-parser": "~1.3.3",
     "cookie-session": "*",
+    "cors": "^2.6.0",
+    "cron": "^1.0.9",
     "crypto": "*",
     "debug": "~2.1.1",
+    "email-templates": "*",
     "express": "~4.11.1",
     "express-session": "*",
     "gcm": "*",
     "jshashes": "*",
-    "mongoose": "^3.8.24",
+    "lodash": "~1.3.1",
+    "mongoose": "3.8",
+    "mongoose-deep-populate": "^1.1.0",
+    "mongoose-scheduler": "^1.0.2",
     "morgan": "~1.5.1",
+    "multer": "*",
     "node-gcm": "*",
+    "nodemailer": "^1.3.4",
     "passport": "*",
+    "passport-http": "^0.2.2",
     "passport-localapikey-update": "*",
-    "serve-favicon": "~2.2.0"
-    
+    "serve-favicon": "~2.2.0",
+    "socket.io": "^1.3.5",
+    "underscore": "^1.8.3"
   }
 }

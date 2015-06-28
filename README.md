@@ -1,5 +1,5 @@
-# RestfulNode
-This repositary is an effort to create an easy to use production ready framework for node.js using it as a RESTFUL API.
+# Fondoo-Node-Api
+This is a RESTFUL API created with Nodejs using the Express Framework, Mongoose ORM to handle the MongoDb database and PassportJs to handle the Authentication system.
 
 ## Pre-Requisites:-
 
@@ -37,36 +37,43 @@ http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/
 We use the passport-localapikey-update module to secure our app via a static apiKey. For more info https://www.npmjs.com/package/passport-localapikey-update
 We store our apikey within the app/Config/Config.js
 
+
 ## Installation and Run
 
 
 1) Clone the repositary 
 ```sh
-git clone https://github.com/jumacro/RestfulNode YourProjectName
+git clone https://github.com/jamesdevries/Fondoo-Node-API.git
 ```
 
 2) Go to your project root. Run the package installer
 ```sh
 npm install
 ```
-3) Go to YourProjectName >> app >> Config and open the Config.js file. Change the credentials as per your requirement. Change the apikey as per your project.
+3) Go to Fondoo-Node-API >> app >> Config and open the Config.js file. Change the credentials as per your requirement.
 
 4) Run the application as:-
 ```sh
 npm start
 ```
-### POSTMAN test
+Browse your api as http://localhost:3000/api/v1.0 you will see a welcome message
 
-N.B. POSTMAN is a crome extension for Api testing.
+## Use the API
 
-On POSTMAN put http://localhost:3000/api/v1.0/ as URL
-Choose "GET"
-Click on Headers tab, and pass the apikey via the header.
-The apikey should match with the apikey you stored in your app/Config/Config.js file.
+Please follow the Fondoo-Node-API >> app >> router.js you will understand the end-points.
 
-### Production trick
+*** The apikey should always be passed as a header for all request to be Authorized. 
+Field name: apikey
+Value: The string you stored in your Config.js as "apiKey"
 
-Install forever.js. Its a easy to way to keep your node app persistant. Follow the bellow blog for more information:-
-http://blog.nodejitsu.com/keep-a-nodejs-server-up-with-forever/
+1) POST users
+http://localhost:3000/api/v1.0/users
 
-Happy Coding :)
+Use the POSTMAN Google Chrome App with Normal tab and x-www-form-urlencoded method to submit the form. Pass the header as mentioned above.
+
+2) GET users
+http://localhost:3000/api/v1.0/users
+
+Use the POSTMAN Google Chrome App with Normal tab, pass the header as mentioned above, you will get to see the results.
+
+=====

@@ -1,0 +1,59 @@
+{"preferences":{"gender_like":"F","proximity":70,"age_like":{"higher_pref":75,"lower_pref":18}},"public_details":{"age":34,"first_name":"Mike","last_name":"Fallersky","gender":"M","birthday":"1980-08-07T22:00:00.000Z","bio":"","about":"","location":[37.7577,-122.4376]},"photos":[{"_id":"556f6a89d03d7a7a01510b3e","created":"2015-06-03T20:58:49.593Z","cloudinary":{"public_id":"qxxmqbhppqmjzvq3oe3s","width":512,"height":512,"format":"jpg"}}]}
+
+
+
+
+
+
+
+
+
+{
+   "preferences": {
+       "gender_like": "M",
+       "proximity": 5,
+       "age_like": {
+           "higher_pref": 75,
+           "lower_pref": 18
+       }
+   },
+   "public_details": {
+       "first_name": "Marry Ann",
+       "gender": "M",
+       "birthday": "1988-07-30T22:00:00.000Z",
+       "bio": "",
+       "about": "",
+       "location": [
+           37.7577,
+           -122.4376
+       ]
+   },
+   "photos": [
+     {
+                "_id": "556a5d69b7178a011ae3686e",
+                "_userId": "556a56e033e8aead18e4c5dd",
+                "modified": "2015-05-31T01:01:29.907Z",
+                "created": "2015-05-31T01:01:29.907Z",
+                "cloudinary": {
+                    "public_id": "chy5zqohmqnjys1nf6ps",
+                    "version": 1433034089,
+                    "signature": "db3d9a7faa828164b9204c601a455da71d801147",
+                    "width": 851,
+                    "height": 314,
+                    "format": "jpg",
+                    "bytes": 38710,
+                    "etag": "8e91fb2e50f97460716834c8b405f8c7",
+                    "url": "http://res.cloudinary.com/virgin-labs-inc/image/upload/v1433034089/chy5zqohmqnjys1nf6ps.jpg",
+                    "secure_url": "https://res.cloudinary.com/virgin-labs-inc/image/upload/v1433034089/chy5zqohmqnjys1nf6ps.jpg",
+                    "tags": []
+                },
+                "location": [
+                    0,
+                    0
+                ],
+                "photo_type": "profile",
+                "__v": 0
+            },
+       "http://img.covry.com/covers/cv/wolf.jpg"
+   ]
+}

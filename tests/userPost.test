@@ -1,0 +1,34 @@
+{
+    "email": "roger-bacoon@tfbnw.net",
+    "photos" : [
+             "http://img.covry.com/covers/cv/wolf.jpg"
+     ],
+    "public_details": {
+        "location": [
+            -73.9418603,
+            40.5860069
+        ],
+        "about": "",
+        "bio": "",
+        "birthday": "1988-05-18T07:29:56.698Z",
+        "gender": "F",
+        "last_name": "Bacoon",
+        "first_name": "Rozer"
+    },
+    "social_details": {
+        "facebookId": "10637815699999"
+    },
+    "devices": {
+        "deviceId": "12345-YUI-A23",
+        "deviceType": "iphone"  
+
+    }
+}
+
+
+"device_type": "android"  //iphone
+
+
+http://api.fondoo.mod.bz/v1.0/users/55789a4335324e0d0fb047a4/devices
+
+http://api.fondoo.mod.bz/v1.0/users/55789a4335324e0d0fb047a4/devices
