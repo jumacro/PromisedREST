@@ -8,12 +8,12 @@ var express         = require('express'),
     bodyParser      = require('body-parser'),
     passport        = require('passport'),
     cors            = require('cors'),
-    Config          = require('./app/Config/Config'),
+    Config          = require('./server/Config/Config'),
     db              = Config.db.remote,
     //db              = Config.db.local,
     mongoose        = require('mongoose');
 
-var app             = express();
+var server             = express();
 
 
 var getConnectionString = function (dbConfig) {
@@ -32,34 +32,39 @@ mongoose.connect(getConnectionString(db), function (err) {
         console.log(err);
         return;
     }
-    console.log('Started fondoo database');
+    console.log('Started resty database');
 });
 
-
-/** Declaring the database connection **/
-//var mongoose = require('mongoose');
-//mongoose.connect('mongodb://' + Config.db.host + '/' + Config.db.database);
 
 /** Middlewares **/
 
 /** load the logger **/
-app.use(logger('dev'));
+server.use(logger('dev'));
 /** load the body parser middleware **/
 
 // configure body parser
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json());
 /** load the cookie parser middleware **/
-app.use(cookieParser());
+server.use(cookieParser());
 /** Initialize Passport.js **/
-app.use(passport.initialize());
+server.use(passport.initialize());
 
+/*** SET UP ANGULAR FRONT END ***/
+
+server.use(express.static(__dirname + '/client/app'));
+
+server.get('/', function(req, res){
+  res.redirect('/index.html');
+});
 
 
 /** Router file declaration **/
-var router = require('./app/routers');
+var router = require('./server/routers');
 
-app.use(cors({
+/** CORS SET UP **/
+
+server.use(cors({
     origin: true,
     methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
     allowedHeaders: 'Origin, Content-Type, Accept, Authorization, X-Request-With, Content-Range, Content-Disposition, Content-Description',
@@ -67,14 +72,13 @@ app.use(cors({
 
 }));
 
-
-
+/*************************************************************************************************
 
 /** Registration of the route middleware **/
-app.use('/' + Config.apiVersion, router);
+server.use('/' + Config.apiVersion, router);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+server.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -84,9 +88,10 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+if (server.get('env') === 'development') {
+    server.use(function(err, req, res, next) {
         res.status(err.status || 500);
+        console.log(err);
         res.json({
             message: err.message,
             error: err
@@ -96,13 +101,14 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+server.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    console.log(err);
     res.json({
         message: err.message,
         error: err
     });
 });
 
-/** Expose app to other modules **/
-module.exports = app;
+/** Expose server to other modules **/
+module.exports = server;

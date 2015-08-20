@@ -3,16 +3,16 @@ module.exports = {
         local: {
             host: 'localhost',
             port: 27017,
-            dbName: 'fondoo'
+            dbName: 'resty'
         },
         remote: {
-            host: 'test',
-            port: 27017,
-            dbName: 'test',
+            host: 'ds059702.mongolab.com:59702',
+            port: 59702,
+            dbName: 'resty',
             options: {
                 //TODO change credentials
-                username: 'test',
-                password: 'test'
+                username: 'resty',
+                password: 'resty'
             }
         }
     },
@@ -22,14 +22,28 @@ module.exports = {
             encrypt_key: '4b 8?((~FKnpD))>8kb!B |#-uXIO24G3rc:&MG+FR{x;r#Uq4k{Ef@F4E9^-qS!', //change hash key
         },
         api: {
-            appId: 'test-resty', 
-            appSecret: 'pAoQWEiuy1!@', 
+            appId: 'resty', 
+            appSecret: 'resty', 
         },
         tokenLife: 3600
     },
-    gcm: {
-        apiKey: "AIzaSyBRH3MvZtxUA9ggmhpIMIvuE37s8f1d7Yk"
+    mailer: {
+        auth: {
+         user: 'test@example.com',
+         pass: 'secret',
+       },
+       defaultFromAddress: 'Test <test@examle.com>'
     },
+    cloudinary: {
+        //setttings for the cloudinary options
+        cloud_name: 'jumacro-software-systems-pvt-ltd', 
+        api_key: '165614874531362', 
+        api_secret: 'N5Vj6Fn5e_ADKau0XgHfqvXOg-g' 
+    },
+    gcm: {
+        apiKey: "GCM-Api-key-here"
+    },
+
     apn: {
         connection: {
             gateway: "gateway.push.apple.com",

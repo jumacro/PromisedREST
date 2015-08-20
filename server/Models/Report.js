@@ -14,9 +14,9 @@ var ReportSchema = new Schema({
         type: ObjectId,
         ref: 'User'
     },
-    _postId: {  
+    _messageId: {  
         type: ObjectId,
-        ref: 'Channel'
+        ref: 'Message'
     },
     _reportedUserId: {  
         type: ObjectId,

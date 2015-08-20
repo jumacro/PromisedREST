@@ -1,7 +1,7 @@
 /**
 * User schema
 * Stores the registered user data
-* Copyright(c) 2015 Virgin Labs
+* Copyright(c) 2015 Jumacro Software Services Pvt. Ltd.
 */
 
 var mongoose = require('mongoose'),
@@ -11,25 +11,14 @@ var mongoose = require('mongoose'),
 
 //var relative tables
 
-var Device = require('./Device'),
-    Report = require('./Report'),
-    UserBlock = require('./UserBlock'),
-    Photo = require('./Photo'),
-    Post = require('./Post'),
-    PostResponse = require('./PostResponse'),
-    Channel = require('./Channel'),
-    Message = require('./Message');
-
-//load component
-
-var Image = require('../Component/Image');
+var Device = require('./Device');
 
 var UserSchema = new Schema({
-    username: {
+    username: {  //Only used by Admin
         type: String, 
         default: ''
     },
-    password: {
+    password: { //Only used by Admin
         type: String,
         default: ''
     },
@@ -49,10 +38,6 @@ var UserSchema = new Schema({
             index: {
                 unique: true,
             }
-        },
-        foursquareId: { //The id of the users Foursquare
-            type: String,
-            default: ''
         }
     },    
     public_details: {  //data being fetched from Facebook Id
@@ -92,31 +77,6 @@ var UserSchema = new Schema({
         }
 
     },
-    preferences: {
-        gender_like: {  // Valid values are M/F
-            type: String,            
-            default : 'F',
-            enum : ['M', 'F']
-        },
-        proximity: {
-            type: Number,
-            default: 0
-        },
-        age_like: {
-            higher_pref: {
-                type: Number,
-                default: 0
-            },
-            lower_pref: {
-                type: Number,
-                default: 0
-            }
-        }
-    },
-    photos: [{ type: ObjectId, ref: 'Photo' }],
-    posts: [{ type: ObjectId, ref: 'Post' }],
-    blockedUsers: [{ type: ObjectId, ref: 'User' }],
-    matchedUsers: [{ type: ObjectId, ref: 'User' }],
     isAdmin           : {  //Checks if the user is an admin or not
         type: Boolean,
         default: false
@@ -126,10 +86,6 @@ var UserSchema = new Schema({
         default: true
     },
     status              : {
-        type: Boolean,
-        default: true
-    },
-    online              : {
         type: Boolean,
         default: true
     },
@@ -175,14 +131,6 @@ UserSchema.pre('remove', function(next) {
     // 'this' is the client being removed. Provide callbacks here if you want
     // to be notified of the calls' result.
     Device.remove({_userId: this._id}).exec();
-    UserBlock.remove({_userId: this._id}).exec();
-    Report.remove({_userId: this._id}).exec();
-    Photo.remove({_userId: this._id}).exec();
-    Post.remove({_userId: this._id}).exec();
-    PostResponse.remove({_userId: this._id}).exec();
-    Channel.remove({_userId: this._id}).exec();
-    Channel.remove({_contactUserId: this._id}).exec();
-    Message.remove({_userId: this._id}).exec();
     next();
 });
 /**

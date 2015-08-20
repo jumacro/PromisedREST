@@ -14,12 +14,12 @@ var mongoose = require('mongoose'),
 var Message = require('./Message');
 
 var ChannelSchema = new Schema({
-    _userId: {  
+    _firstUserId: {  
         type: ObjectId,
         required: true,
         ref: 'User'
     },
-    _contactUserId: {
+    _secondUserId: {
         type: ObjectId,
         required: true,
         ref: 'User'
@@ -31,11 +31,6 @@ var ChannelSchema = new Schema({
     modified: {
         type: Date,
         default: Date.now
-    },
-    messages: [{ type: ObjectId, ref: 'Message' }],
-    last_message: {
-        type: ObjectId,
-        ref: 'Message'
     }
 });
 
@@ -56,8 +51,8 @@ ChannelSchema.statics.checkNInsert = function(params, callback) {
     var Channel = this;
     Channel.findOne()
     .or([
-         { $and: [{_userId: params._userId}, {_contactUserId: params._contactUserId}] },
-         { $and: [{_userId: params._contactUserId}, {_contactUserId: params._userId}] }
+         { $and: [{_firstUserId: params._firstUserId}, {_secondUserId: params._secondUserId}] },
+         { $and: [{_firstUserId: params._secondUserId}, {_secondUserId: params._firstUserId}] }
     ])
     .lean()
     .exec(function(err, channel) {
@@ -72,8 +67,8 @@ ChannelSchema.statics.checkNInsert = function(params, callback) {
                 //no channel found
                 //insert operation starts
                 var newChannel = {};
-                newChannel._userId = params._userId;
-                newChannel._contactUserId = params._contactUserId;
+                newChannel._firstUserId = params._firstUserId;
+                newChannel._secondUserId = params._secondUserId;
                 //console.log(newChannel);
                 var channel = new Channel(newChannel);
                 channel.save(function(err, channel) {

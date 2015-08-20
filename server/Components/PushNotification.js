@@ -1,8 +1,8 @@
 var GCMPusher    = require('./GCMPusher'),
     APNSPusher   = require('./APNPusher'),
     async = require('async'),
-    Device = require('../Model/Device'),
-    User = require('../Model/User');
+    Device = require('../Models/Device'),
+    User = require('../Models/User');
 
 
 exports.sendNotifications = function(notifyMessage, soundName, userId) {
@@ -13,7 +13,7 @@ exports.sendNotifications = function(notifyMessage, soundName, userId) {
             if(err) {
                 console.log(err);
             } else {
-                console.log(user);
+                //console.log(user);
                 if(user) {
                     Device.find({_userId : user._id})
                           .lean()
@@ -50,7 +50,7 @@ exports.sendNotifications = function(notifyMessage, soundName, userId) {
                                                 //console.log("iphone note sent")
 
                                             } else {
-                                                console.log('Unknown device type');
+                                                console.log('Push notification - Unknown device type');
                                                 //callback();
                                             }
 
@@ -59,18 +59,18 @@ exports.sendNotifications = function(notifyMessage, soundName, userId) {
                                             if(err) {
                                                 console.log(err);
                                             } else {
-                                                console.log('All push finished');
+                                                console.log('Push notification - All push finished');
                                             }
                                         });
                                     } else {
-                                        console.log("No device found")
+                                        console.log("Push notification - No device found")
                                     }                                
                                 } else {
-                                    console.log("No devices found");
+                                    console.log("Push notification - No devices found");
                                 }
                           });
                 } else {
-                    console.log('No user found');
+                    console.log('Push notification - No user found');
                 }    
             }
             
