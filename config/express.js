@@ -7,14 +7,21 @@ import methodOverride from 'method-override';
 import cors from 'cors';
 import httpStatus from 'http-status';
 import expressWinston from 'express-winston';
-import expressValidation from 'express-validation';
+import passport from 'passport';
 import helmet from 'helmet';
 import winstonInstance from './winston';
-import routes from '../server/Routes/Index';
-import config from './env';
-import APIError from '../server/Helpers/APIError';
+import routes from '../api/routes/Index';
+import turkcellRoutes from '../api/routes/TurkcellIndex';
+import config from '../env';
+import settings from '../constants/settings';
+// import Auth from '../api/helpers/Auth';
+import APIError from '../api/helpers/APIError';
+import ResponseObject from '../api/helpers/ResponseObject';
+
 
 const app = express();
+
+const debug = require('debug')('yoloApi-v2:express');
 
 if (config.env === 'development') {
   app.use(logger('dev'));
@@ -31,8 +38,20 @@ app.use(methodOverride());
 // secure apps by setting various HTTP headers
 app.use(helmet());
 
+/** version 2 block */
+// initializing passport
+// const authorize = new Auth();
+app.use(passport.initialize());
+
 // enable CORS - Cross Origin Resource Sharing
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({
+  origin: true,
+  methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+  allowedHeaders: 'Origin, Content-Type, Accept, Authorization, X-Request-With, Content-Range, Content-Disposition, Content-Description',
+  credentials: true
+}));
 
 // enable detailed API logging in dev env
 if (config.env === 'development') {
@@ -46,17 +65,18 @@ if (config.env === 'development') {
   }));
 }
 
-// mount all routes on /v1.0 path
-app.use('/' + config.apiVersion, routes);
+app.use(express.static('public'));
+
+
+// mount all routes on / path
+// debug(settings.apiVersion);
+app.use(`/api/${settings.apiVersion}`, routes);
+
+app.use('/', turkcellRoutes);
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {
-  if (err instanceof expressValidation.ValidationError) {
-    // validation error contains errors which is an array of error each containing message[]
-    const unifiedErrorMessage = err.errors.map(error => error.messages.join('. ')).join(' and ');
-    const error = new APIError(unifiedErrorMessage, err.status, true);
-    return next(error);
-  } else if (!(err instanceof APIError)) {
+  if (!(err instanceof APIError)) {
     const apiError = new APIError(err.message, err.status, err.isPublic);
     return next(apiError);
   }
@@ -77,11 +97,19 @@ if (config.env !== 'test') {
 }
 
 // error handler, send stacktrace only during development
-app.use((err, req, res, next) => // eslint-disable-line no-unused-vars
-  res.status(err.status).json({
-    message: err.isPublic ? err.message : httpStatus[err.status],
-    stack: config.env === 'development' ? err.stack : {}
-  })
-);
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+  let errStack = [];
+  if (config.env === 'development') {
+    // debug(err.stack);
+    errStack = err.stack;
+  }
+  if(err.message === 'UNAUTHORIZED') {
+    err.status = 401;
+    err.code = 401;
+  }
+  // debug(err.status);
+  // process.exit();
+  res.status(err.status).json(new ResponseObject(err.status, err.message, errStack));
+});
 
 export default app;

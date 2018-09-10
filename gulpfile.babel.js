@@ -9,7 +9,7 @@ const plugins = gulpLoadPlugins();
 const paths = {
   js: ['./**/*.js', '!dist/**', '!node_modules/**', '!coverage/**'],
   nonJs: ['./package.json', './.gitignore'],
-  tests: './server/Tests/*.js'
+  tests: './api/Tests/*.js'
 };
 
 // Clean up dist and coverage directory
@@ -39,7 +39,7 @@ gulp.task('babel', () =>
     .pipe(gulp.dest('dist'))
 );
 
-// Start server with restart on file changes
+// Start api with restart on file changes
 gulp.task('nodemon', ['copy', 'babel'], () =>
   plugins.nodemon({
     script: path.join('dist', 'app.js'),

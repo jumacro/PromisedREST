@@ -1,0 +1,15 @@
+[submodule "api/models"]
+	path = api/models
+	url = git@github.com:yolotechnologies/yoloModel.git
+[submodule "api/constants"]
+	path = api/constants
+	url = git@github.com:yolotechnologies/yoloConstants.git
+[submodule "constants"]
+	path = constants
+	url = git@github.com:yolotechnologies/yoloConstants.git
+[submodule "api/plugins"]
+	path = api/plugins
+	url = git@github.com:yolotechnologies/yoloPlugins.git
+[submodule "api/helpers"]
+	path = api/helpers
+	url = git@github.com:yolotechnologies/yoloHelpers.git
