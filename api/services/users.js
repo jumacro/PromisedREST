@@ -22,39 +22,28 @@ class Users extends Base {
 
   constructor() {
     super(models);
-    this.Auth = new Auth();
   }
 
   getAll(req) {
-    if (req.user.isAdmin) {
-      let filters = null;
-      if (req.query) {
-        filters = req.query;
-      }
-      return this.model.userModel.allusers(filters);
+    let filters = null;
+    if (req.query) {
+      filters = req.query;
     }
-    const err = { code: 400, message: 'UNATHORIZED' };
-    throw err;
+    return this.model.userModel.allusers(filters);
   }
 
   create(req) {
-    if (req.user.isAdmin) {
-      if (req.body) {
-        const saveParams = req.body;
-        if (!saveParams.username || !saveParams.password) {
-          const passwordObj = UserController._createPasswordHash(saveParams.password);
-          const password = passwordObj.password;
-          const salt = passwordObj.salt;
-          saveParams.password = password;
-          saveParams.salt = salt;
-          return this.model.userModel.add(saveParams);
-        }
-      }
-      const err = { code: 500, message: 'BADREQUEST' };
-      throw err;
+    const saveParams = req.body;
+    if (!saveParams.email || !saveParams.password) {
+      const passwordObj = Users._createPasswordHash(saveParams.password);
+      const password = passwordObj.password;
+      const salt = passwordObj.salt;
+      saveParams.password = password;
+      saveParams.salt = salt;
+      return this.model.userModel.add(saveParams);
     }
-    const err = { code: 400, message: 'UNATHORIZED' };
-    throw err;
+    const err = { code: 500, message: 'LOGINDATAMISSING' };
+    return Promise.reject(err);
   }
 
   /**
@@ -115,7 +104,7 @@ class Users extends Base {
                   debug('error in updating logged in status');
                   debug(err);
                 })
-              return super.generateToken(user);
+              return super.generateToken(userData);
             }
             const err = { code: 400, message: 'WRONGUSER' };
             throw err;

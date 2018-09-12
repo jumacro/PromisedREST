@@ -27,15 +27,6 @@ const User = new Schema({
     required: [true, 'Email is required'],
     unique: true
   },
-  username: {
-    type: ObjectId,
-    required: [true, 'Username is required'],
-    unique: true
-  },
-  loginPhoneNo: {
-    type: String,
-    required: [true, 'Phone number is required']
-  },
   password: {
     type: String,
     required: [true, 'Password is required']
@@ -62,6 +53,14 @@ const User = new Schema({
   lastLoginDate: {
     type: Date,
     default: null
+  },
+  createdBy: {
+    type: ObjectId,
+    default: null
+  },
+  isCustomer: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -77,7 +76,7 @@ User.statics = {
     const now = new Date();
     const utc = now;
     saveParams.created = utc;
-    const user = new this(reqParams);
+    const user = new this(saveParams);
     debug(user);
     return user.save();
   },
@@ -118,7 +117,7 @@ User.statics = {
 
   allusers(filters) {
     const Model = this;
-    const match = {};
+    let match = {};
     let sortObj = {
       created: -1
     };

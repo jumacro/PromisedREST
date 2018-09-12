@@ -1,10 +1,11 @@
-/** Modules */
+/** Services */
+import AdminServices from '../services/admins';
+import CustomerServices from '../services/customers';
 /** Base controller */
 import Index from './index';
 /** Models */
-import Users from '../controllers/users';
+
 /** constants */
-import settings from '../../constants/settings';
 import statusCodes from '../../constants/codes';
 
 
@@ -15,10 +16,12 @@ const debug = require('debug')('promised-rest:HTTP/User');
 class UserPipe extends Index {
 
   constructor() {
-    this.userCtrl = new Users();
+    super();
+    this.adminService = new AdminServices();
+    this.customerService = new CustomerServices();
   }
 
-  getAll(req, res, next) {
+  /*getAll(req, res, next) {
     this.userCtrl.getAll(req)
       .then((response) => {
         // debug(users);
@@ -55,7 +58,7 @@ class UserPipe extends Index {
       .then((response) => {
         // debug(users);
         const resultObj = {
-          codeObj: statusCodes.success,
+          codeObj: statusCodes.created,
           data: response
         };
         super._createResponse(res, resultObj);
@@ -96,10 +99,12 @@ class UserPipe extends Index {
         debug(err);
         super._throwError(next, err);
       });
-  }
+  }*/
+  
+  
 
-  login(req, res, next) {
-    this.userCtrl.login(req)
+  adminLogin(req, res, next) {
+    this.adminService.login(req)
       .then((response) => {
         // debug(users);
         const resultObj = {
@@ -118,4 +123,4 @@ class UserPipe extends Index {
 }
 
 
-export default UserController;
+export default UserPipe;

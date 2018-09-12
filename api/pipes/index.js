@@ -1,5 +1,4 @@
 /** Helpers */
-
 import ResponseHelper from '../helpers/ResponseObject';
 import ErrorHelper from '../helpers/ErrorHandler';
 
@@ -9,10 +8,9 @@ const debug = require('debug')('promised-rest:Controller/App');
 
 class Index {
 
-  constructor(modelObj) {
+  constructor() {
     this.ResponseHelper = ResponseHelper;
     this.ErrorHelper = ErrorHelper;
-    this.model = modelObj;
   }
 
   _createResponse(responseHandler, resultObj) {

@@ -18,7 +18,7 @@ const AuthStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
   debug(jwtPayload);
   
   User.findOne({
-    loginPhoneNo: jwtPayload.loginPhoneNo
+    _id: jwtPayload.userId
   })
   .select('-password -salt -phoneVerificationCode')
   .lean().exec()
@@ -29,15 +29,11 @@ const AuthStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
         const err = { code: 401, message: 'LOGGEDIN' };
         throw err;
       }
-      if (!foundUser.accountStatus) {
+      if (!foundUser.isActive) {
         const err = { code: 401, message: 'LOCKED' };
         throw err;
       }
       const user = foundUser;
-      const today = new Date();
-      const utc = today;
-      utc.setHours( utc.getHours() + 3);
-      User.update({ _id: foundUser._id }, { lastLoginDate: utc });
       user.userId = foundUser._id;
       // debug(user);
       return done(null, user);
