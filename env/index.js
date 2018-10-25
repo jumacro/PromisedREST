@@ -1,6 +1,6 @@
 import path from 'path';
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'development'; // need to set NODE_ENV correctly or use development.js
 const config = require(`./${env}`); // eslint-disable-line import/no-dynamic-require
 
 const defaults = {
