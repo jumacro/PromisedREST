@@ -10,17 +10,18 @@ import expressWinston from 'express-winston';
 import passport from 'passport';
 import helmet from 'helmet';
 import winstonInstance from './winston';
-import routes from '../api/routes/index';
+import routes from '../api/routes/Index';
+import adminRoutes from '../api/routes/Admins/Index';
+import merchantRoutes from '../api/routes/Merchants/Index';
 import config from '../env';
 import settings from '../constants/settings';
-// import Auth from '../api/helpers/Auth';
 import APIError from '../api/helpers/APIError';
 import ResponseObject from '../api/helpers/ResponseObject';
 
 
 const app = express();
 
-const debug = require('debug')('promised-rest:Sys/Express');
+const debug = require('debug')('ip-api:Settings/Express');
 
 if (config.env === 'development') {
   app.use(logger('dev'));
@@ -71,6 +72,10 @@ app.use(express.static('public'));
 // debug(settings.apiVersion);
 app.use(`/api/${settings.apiVersion}`, routes);
 
+app.use(`/admin-api/${settings.apiVersion}/`, adminRoutes);
+
+app.use(`/merchant-api/${settings.apiVersion}/`, merchantRoutes);
+
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {
   if (!(err instanceof APIError)) {
@@ -97,15 +102,9 @@ if (config.env !== 'test') {
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   let errStack = [];
   if (config.env === 'development') {
-    // debug(err.stack);
+    debug(err.stack);
     errStack = err.stack;
   }
-  if(err.message === 'UNAUTHORIZED') {
-    err.status = 401;
-    err.code = 401;
-  }
-  // debug(err.status);
-  // process.exit();
   res.status(err.status).json(new ResponseObject(err.status, err.message, errStack));
 });
 

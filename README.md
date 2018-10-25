@@ -1,8 +1,8 @@
-# Promise Rest
+# IP Rest
 
 ## Overview
 
-This is a boilerplate to create a RESTful Api with Nodejs, Express 4, ES6, Mongoose, MongoDB using Bluebird Promise.
+This is the REST API for Istanbul Pazarlari - A ecommerce portal.
 We have used yarn over npm.
 We have used Passport.js for Authentication.
 
@@ -11,8 +11,8 @@ We have used Passport.js for Authentication.
 
 Clone the repo:
 ```sh
-git clone https://github.com/yolotechnologies/PromisedRest.git
-cd Promised-Rest
+git clone https://github.com/yolotechnologies/ip-api.git
+cd ip-api
 ```
 
 Install yarn:
@@ -31,7 +31,7 @@ Start server:
 yarn start
 
 # Selectively set DEBUG env var to get logs
-DEBUG=promised-rest:* yarn start
+DEBUG=ip-api:* yarn start
 ```
 Refer [debug](https://www.npmjs.com/package/debug) to know how to selectively turn on logs.
 

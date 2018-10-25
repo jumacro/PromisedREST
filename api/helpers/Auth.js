@@ -1,52 +1,65 @@
-import passport from 'passport';
-import passportJwt from 'passport-jwt';
+import jwt from 'jsonwebtoken';
 import settings from '../../constants/settings';
+import codes from '../../constants/codes';
+/** helpers */
+import Encrypt from '../helpers/Encrypt';
 
-import User from '../models/User';
+const debug = require('debug')('ip-api:Helpers/Auth');
 
-const debug = require('debug')('promised-rest:Helpers/Auth');
-
-const tokenKey = settings.security.api.appSecret;
-const extractJwt = passportJwt.ExtractJwt;
-const jwtOptions = {
-  jwtFromRequest: extractJwt.fromAuthHeader(),
-  secretOrKey: tokenKey
-};
-
-const JwtStrategy = passportJwt.Strategy;
-const AuthStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-  debug(jwtPayload);
-  
-  User.findOne({
-    _id: jwtPayload.userId
-  })
-  .select('-password -salt -phoneVerificationCode')
-  .lean().exec()
-  .then((foundUser) => {
-     
-    if (foundUser) {
-      if (!foundUser.isLoggedIn) {
-        const err = { code: 401, message: 'LOGGEDIN' };
-        throw err;
-      }
-      if (!foundUser.isActive) {
-        const err = { code: 401, message: 'LOCKED' };
-        throw err;
-      }
-      const user = foundUser;
-      user.userId = foundUser._id;
-      // debug(user);
-      return done(null, user);
+class Auth {
+    constructor() {
+        this.tokenKey = settings.security.api.appSecret;
+        this.tokenExpiry = {
+          expiresIn: settings.security.tokenLife
+        };
+        this.successCodes = codes.http.success;
+        this.errorCodes = codes.http.error;
+        this.inputedPassword = null;
+        this.salt = null;
+        this.existingPassword = null;
+        this.payload = null;
+        this.txtPassword = null;
     }
-    const err = { code: 401, message: 'UNAUTHORIZED' };
-    throw err;
-  })
-  .catch(err => done(err, null));
-  
-});
 
-passport.use(AuthStrategy);
+    generateToken() {
+        const token = jwt.sign(this.payload, this.tokenKey, this.tokenExpiry);
+        debug(token);
+        const returnData = {
+          token: `JWT ${token}`
+        };
+        return returnData;
+    }
+    
+    /**
+    * Verifies the inputedPassword with the existingPassword
+    * @param {*} existingPassword
+    * @param {*} salt
+    * @param {*} inputedPassword
+    * @return Boolean
+    */
+    verifyPassword() {
+        const self = this;
+        const encrypt = new Encrypt(self.inputedPassword);
+        return encrypt.verifyPassword(self.salt, self.existingPassword);
+    }
 
-const isAuthenticated = passport.authenticate('jwt', { session: false });
+    /**
+    * Creates the password hash and salt
+    * @param {*} txtPassword
+    * @return JSON Object passwordObject
+    */
+    createPasswordHash() {
+        const self = this;
+        const encrypt = new Encrypt(self.txtPassword);
+        const passwordStr = encrypt.hashPassword();
+        const hashedPassword = passwordStr.passwordHash;
+        const salt = passwordStr.salt;
+        const passwordObject = {
+          password: hashedPassword,
+          salt
+        };
+        return Promise.resolve(passwordObject);
+    }
+}
 
-export default { isAuthenticated };
+export default Auth;

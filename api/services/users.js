@@ -1,17 +1,18 @@
 /** Modules */
 /** Base controller */
-import Base from './Base';
+import Base from './base';
 /** Models */
 import User from '../models/User';
 
+import Auth from '../helpers/Auth';
+import DateHelper from '../helpers/Date';
 
-/** helpers */
-import Encrypt from '../helpers/Encrypt';
 /** constants */
 import settings from '../../constants/settings';
 
 
-const debug = require('debug')('promised-rest:Controller/User');
+
+const debug = require('debug')('ip-api:Controller/User');
 
 /** create model object */
 const models = {
@@ -22,100 +23,111 @@ class Users extends Base {
 
   constructor() {
     super(models);
+    this.err = { code: 500 };
+    this.date = new DateHelper();
   }
 
-  getAll(req) {
+  get(query) {
     let filters = null;
-    if (req.query) {
-      filters = req.query;
+    if (query) {
+      filters = query;
     }
     return this.model.userModel.allusers(filters);
   }
-
-  create(req) {
-    const saveParams = req.body;
-    if (!saveParams.email || !saveParams.password) {
-      const passwordObj = Users._createPasswordHash(saveParams.password);
-      const password = passwordObj.password;
-      const salt = passwordObj.salt;
-      saveParams.password = password;
-      saveParams.salt = salt;
-      return this.model.userModel.add(saveParams);
-    }
-    const err = { code: 500, message: 'LOGINDATAMISSING' };
-    return Promise.reject(err);
-  }
-
-  /**
-   * Verifies the inputedPassword with the existingPassword
-   * @param {*} existingPassword
-   * @param {*} salt
-   * @param {*} inputedPassword
-   * @return Boolean
-   */
-  static _verifyPassword(inputedPassword, salt, existingPassword) {
-    const encrypt = new Encrypt(inputedPassword);
-    return encrypt.verifyPassword(salt, existingPassword);
-  }
-
-  /**
-   * Creates the password hash and salt
-   * @param {*} txtPassword
-   * @return JSON Object passwordObject
-   */
-  static _createPasswordHash(txtPassword) {
-    const encrypt = new Encrypt(txtPassword);
-    const passwordStr = encrypt.hashPassword();
-    const hashedPassword = passwordStr.passwordHash;
-    const salt = passwordStr.salt;
-    const passwordObject = {
-      password: hashedPassword,
-      salt
+  
+  create(params) {
+    const self = this;
+    const data = {
+      email: params.check.email,
+      phone: params.check.phone
     };
-    return passwordObject;
-  }
-
-  generateToken(userObj) {
-    const userData = userObj;
-    
-    return super.generateToken(userData._id);
-  }
-
-  login(req) {
-    const username = req.body.username;
-    const password = req.body.password;
-    return this.model.userModel.getAUser({ username })
-      .then((userData) => {
-        if (userData) {
-          if (userData.isActive) {
-            const passwordVerification = Users._verifyPassword(
-              password, userData.salt, userData.password
-            );
-            if (passwordVerification) {
-              const params = {
-                isLoggedIn: true,
-                lastLoginDate: new Date()
-              };
-              this.model.userModel.update({ _id: userData._id }, params)
-                .then((updated) => {
-                  debug('updated logged in status');
-                })
-                .catch((err) => {
-                  debug('error in updating logged in status');
-                  debug(err);
-                })
-              return super.generateToken(userData);
-            }
-            const err = { code: 400, message: 'WRONGUSER' };
-            throw err;
-          }
-          const err = { code: 400, message: 'DEACTIVE' };
-          throw err;
+    const saveParam = params.data;
+    const auth = new Auth();
+    return self.model.userModel.checkExistance(data)
+      .then((userExists) => {
+        if (!userExists) {
+          auth.txtPassword = params.security.password;
+          return auth.createPasswordHash(params.security.password)
+              .then((passwordObj) => {
+                saveParam.password = passwordObj.password;
+                saveParam.salt = passwordObj.salt;
+                return self.model.userModel.add(saveParam);
+              });
         }
-        const err = { code: 400, message: 'WRONGUSER' };
-        throw err;
+        self.err.code = self.errorCodes.validation.exists;
+        throw self.err;
       })
+      .catch(e => Promise.reject(e));
   }
+  
+  login(obj) {
+    const self = this;
+    const auth = new Auth();
+    return self.model.userModel.findOne(obj.query)
+      .lean()
+      .exec()
+      .then((foundUser) => {
+        
+        if (foundUser) {
+          // check password
+          auth.inputedPassword = obj.security.password;
+          auth.salt = foundUser.salt;
+          auth.existingPassword = foundUser.password;
+          auth.payload = {
+            query: obj.query
+          };
+          const passwordVerification = auth.verifyPassword();
+          if (passwordVerification) {
+            if (!foundUser.isActive) {
+              self.err.code = self.errorCodes.auth.locked;
+              throw self.err;
+            }
+            
+            const lastLoginDate = this.date.serverNow(); 
+            // update user model at background
+            self.model.userModel.updateLogin(foundUser._id, true, lastLoginDate)
+              .then((updated) => {
+                debug('updated logged in status');
+              })
+              .catch((err) => {
+                debug('error in updating logged in status');
+                debug(err);
+              });
+              // forground generate response jwt
+            const tokenObj = auth.generateToken()
+            const returnObj = tokenObj;
+            returnObj.userId = foundUser._id;
+            return Promise.resolve(returnObj);
+          }
+        }
+        self.err.code = self.errorCodes.auth.invalidCred;
+        throw self.err;
+      })
+      .catch(e => Promise.reject(e));
+  }
+  
+  logout(userId) {
+    const self = this;
+    return self.model.userModel.updateLogin(userId, false)
+      .then(response => Promise.resolve(response))
+      .catch(e => Promise.reject(e));
+  }
+  
+  activate(userId) {
+    const self = this;
+    return self.model.userModel.editStatus(userId, true)
+      .then(response => Promise.resolve(response))
+      .catch(e => Promise.reject(e));
+  }
+  
+  deactivate(userId) {
+    const self = this;
+    return self.model.userModel.editStatus(userId, false)
+      .then(response => Promise.resolve(response))
+      .catch(e => Promise.reject(e));
+  }
+  
+  
 }
 
 

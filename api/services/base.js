@@ -1,8 +1,9 @@
 /** Modules */
 import jwt from 'jsonwebtoken';
 import settings from '../../constants/settings';
+import codes from '../../constants/codes';
 
-const debug = require('debug')('promised-rest:Controller/Base');
+const debug = require('debug')('ip-api:Controller/Base');
 
 
 
@@ -14,15 +15,15 @@ class Base {
     this.tokenExpiry = {
       expiresIn: settings.security.tokenLife
     };
+    this.successCodes = codes.http.success;
+    this.errorCodes = codes.http.error;
   }
 
-  generateToken(userId) {
+  generateToken(query) {
     // debug(loginPhoneNo);
     const payload = {
-      userId
+      query
     };
-    debug('TokenKey: ' + this.tokenKey);
-    debug('TokenExpiry: ' + this.tokenExpiry.expiresIn);
     const token = jwt.sign(payload, this.tokenKey, this.tokenExpiry);
     const returnData = {
       token: `JWT ${token}`

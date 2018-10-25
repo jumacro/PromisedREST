@@ -5,7 +5,7 @@ import settings from '../../constants/settings';
 
 // const driverStatusCode = statusCode.driver;
 
-const debug = require('debug')('promised-rest:Model/User');
+const debug = require('debug')('ip-api:Model/User');
 
 
 const Schema = mongoose.Schema;
@@ -16,30 +16,47 @@ const ObjectId = Schema.ObjectId;
 const User = new Schema({
   fname: {
     type: String,
-    required: [true, 'First name is required'],
+    required: true,
   },
   lname: {
     type: String,
-    required: [true, 'Last name is required'],
+    required: true,
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: true,
+    unique: true
+  },
+  phone: {
+    type: String,
+    required: true,
     unique: true
   },
   password: {
     type: String,
-    required: [true, 'Password is required']
+    required: true
   },
   salt: {
     type: String,
-    required: [true, 'Password is required']
+    required: true
   },
   isActive: {
     type: Boolean,
     default: true
   },
   isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  isSuper: {
+    type: Boolean,
+    default: false
+  },
+  isCustomer: {
+    type: Boolean,
+    default: false
+  },
+  isMerchant: {
     type: Boolean,
     default: false
   },
@@ -54,13 +71,9 @@ const User = new Schema({
     type: Date,
     default: null
   },
-  createdBy: {
-    type: ObjectId,
+  ip: {
+    type: String,
     default: null
-  },
-  isCustomer: {
-    type: Boolean,
-    default: true
   }
 });
 
@@ -71,13 +84,13 @@ User.statics = {
    * @params reqParams
    * @return Promise
    */
-  add(request) {
-    const saveParams = request;
+  add(reqParams) {
+    const saveParams = reqParams;
     const now = new Date();
     const utc = now;
     saveParams.created = utc;
     const user = new this(saveParams);
-    debug(user);
+    // debug(user);
     return user.save();
   },
 
@@ -102,10 +115,57 @@ User.statics = {
       .catch(e => Promise.reject(e));
   },
 
-  getA(requestParams) {
+  getOne(requestParams) {
     const Model = this;
-    return Model.findOne(requestParams).lean().exec();
+    return Model.findOne(requestParams)
+    .lean()
+    .exec();
   },
+  
+  updateLogin(_id, value, logindate = null) {
+    const Model = this;
+    const updateObj = {
+      isLoggedIn: value
+    };
+    if (logindate) {
+      updateObj.lastLoginDate = logindate;
+    }
+    const setter = {
+      $set: updateObj
+    };
+    
+    return Model.updateOne({ _id }, setter)
+      .then(updateObj => Promise.resolve(updateObj))
+      .catch(e => Promise.reject(e));
+  },
+  
+  editStatus(_id, value) {
+    const Model = this;
+    return Model.updateOne({ _id }, { isActive: value })
+      .then(updateObj => Promise.resolve(updateObj))
+      .catch(e => Promise.reject(e));
+  },
+  
+  /**
+   * Check if email, loginPhone exists
+   * */
+ checkExistance(data) {
+   const Model = this;
+   const match = {
+    $or: [
+      {
+        email: data.email
+      },
+      {
+        phone: data.phone
+      }
+    ]
+  };
+  return Model.findOne(match)
+          .select('email phone')
+          .lean()
+          .exec();
+ },
 
   /**
    * Get array of user objects
@@ -117,7 +177,7 @@ User.statics = {
 
   allusers(filters) {
     const Model = this;
-    let match = {};
+    const match = {};
     let sortObj = {
       created: -1
     };

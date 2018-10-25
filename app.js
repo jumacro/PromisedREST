@@ -3,7 +3,7 @@ import util from 'util';
 import envConfig from './env';
 import app from './config/express';
 
-const debug = require('debug')('promised-rest:App');
+const debug = require('debug')('ip-api:Settings/App');
 
 const port = process.env.PORT || envConfig.port;
 const env = process.env || envConfig.env;
@@ -18,8 +18,12 @@ Promise.config({
 
 // plugin bluebird promise in mongoose
 mongoose.Promise = Promise;
+const options = {
+  useNewUrlParser: true,
+  poolSize: 10
+};
 // connect to mongo db
-mongoose.connect(envConfig.db, { server:  { poolSize: 10, socketOptions: { keepAlive: 2000, connectTimeoutMS: 30000 } } });
+mongoose.connect(envConfig.db, options);
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${envConfig.db}`);
 });
@@ -38,7 +42,7 @@ app.disable('etag');
 if (!module.parent) {
   // listen on port port
   app.listen(port, () => {
-    debug(`promised-rest server started on port ${port} (${env})`);
+    debug(`ip-rest server started on port ${port} (${env})`);
   });
 }
 

@@ -1,18 +1,23 @@
 /** Helpers */
+
 import ResponseHelper from '../helpers/ResponseObject';
 import ErrorHelper from '../helpers/ErrorHandler';
+import statusCodes from '../../constants/codes';
 
-const debug = require('debug')('promised-rest:Controller/App');
+const debug = require('debug')('ip-api:Pipes/Index');
 
 
 
 class Index {
 
-  constructor() {
+  constructor(serviceType) {
     this.ResponseHelper = ResponseHelper;
     this.ErrorHelper = ErrorHelper;
+    this.serviceType = serviceType;
+    this.successCodes = statusCodes.http.success;
+    this.errorCodes = statusCodes.http.error;
   }
-
+  
   _createResponse(responseHandler, resultObj) {
     return responseHandler.status(resultObj.codeObj.code).json(
       new this.ResponseHelper(
