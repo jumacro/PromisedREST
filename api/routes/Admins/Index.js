@@ -8,9 +8,7 @@ import ErrorHandler from '../../helpers/ErrorHandler';
 
 // general routes
 import userRoutes from './User';
-import merchantRoutes from './Merchant';
 import customerRoutes from './Customer';
-import categoryRoutes from './Category';
 
 
 
@@ -33,14 +31,8 @@ router.get('/Unauthorized', (req, res, next) => {
 // mount user routes at /users
 router.use('/users', userRoutes);
 
-// mount user routes at /merchents
-router.use('/merchants', merchantRoutes);
-
 // mount user routes at /customer
 router.use('/customers', customerRoutes);
-
-// mount category routes at /categories
-router.use('/categories', categoryRoutes);
 
 
 export default router;

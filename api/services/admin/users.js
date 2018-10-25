@@ -4,7 +4,7 @@ import User from '../users';
 import Log from '../actionLogs';
 
 
-const debug = require('debug')('ip-api:Controller/Admin/User');
+const debug = require('debug')('promised-rest:Controller/Admin/User');
 
 class Admins extends User {
 

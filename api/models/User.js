@@ -5,7 +5,7 @@ import settings from '../../constants/settings';
 
 // const driverStatusCode = statusCode.driver;
 
-const debug = require('debug')('ip-api:Model/User');
+const debug = require('debug')('promised-rest:Model/User');
 
 
 const Schema = mongoose.Schema;
@@ -53,10 +53,6 @@ const User = new Schema({
     default: false
   },
   isCustomer: {
-    type: Boolean,
-    default: false
-  },
-  isMerchant: {
     type: Boolean,
     default: false
   },

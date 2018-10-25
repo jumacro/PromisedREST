@@ -4,7 +4,6 @@ import Index from './index';
 /** Models */
 
 import AdminService from '../services/admin/users';
-import MerchantService from '../services/merchant/users';
 import CustomerService from '../services/customer/users';
 /** constants */
 import settings from '../../constants/settings';
@@ -23,9 +22,6 @@ class User extends Index {
     this.authErr = { codeObj: this.errorCodes.auth.unauth };
     if (serviceType === 'CUSTOMER') {
       this.user = new CustomerService();
-    }
-    if (serviceType === 'MERCHANT') {
-      this.user = new MerchantService();
     }
     // this.userSrv = new UserWebService();
   }

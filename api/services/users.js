@@ -12,7 +12,7 @@ import settings from '../../constants/settings';
 
 
 
-const debug = require('debug')('ip-api:Controller/User');
+const debug = require('debug')('promised-rest:Controller/User');
 
 /** create model object */
 const models = {

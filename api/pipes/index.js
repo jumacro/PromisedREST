@@ -4,7 +4,7 @@ import ResponseHelper from '../helpers/ResponseObject';
 import ErrorHelper from '../helpers/ErrorHandler';
 import statusCodes from '../../constants/codes';
 
-const debug = require('debug')('ip-api:Pipes/Index');
+const debug = require('debug')('promised-rest:Pipes/Index');
 
 
 

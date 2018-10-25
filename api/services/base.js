@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import settings from '../../constants/settings';
 import codes from '../../constants/codes';
 
-const debug = require('debug')('ip-api:Controller/Base');
+const debug = require('debug')('promised-rest:Controller/Base');
 
 
 

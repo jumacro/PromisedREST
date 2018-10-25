@@ -4,7 +4,7 @@ import User from '../users';
 import Log from '../actionLogs';
 
 
-const debug = require('debug')('ip-api:Controller/Customer/User');
+const debug = require('debug')('promised-rest:Controller/Customer/User');
 
 class Customers extends User {
 

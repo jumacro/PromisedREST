@@ -12,7 +12,6 @@ import helmet from 'helmet';
 import winstonInstance from './winston';
 import routes from '../api/routes/Index';
 import adminRoutes from '../api/routes/Admins/Index';
-import merchantRoutes from '../api/routes/Merchants/Index';
 import config from '../env';
 import settings from '../constants/settings';
 import APIError from '../api/helpers/APIError';
@@ -21,7 +20,7 @@ import ResponseObject from '../api/helpers/ResponseObject';
 
 const app = express();
 
-const debug = require('debug')('ip-api:Settings/Express');
+const debug = require('debug')('promised-rest:Settings/Express');
 
 if (config.env === 'development') {
   app.use(logger('dev'));
@@ -73,8 +72,6 @@ app.use(express.static('public'));
 app.use(`/api/${settings.apiVersion}`, routes);
 
 app.use(`/admin-api/${settings.apiVersion}/`, adminRoutes);
-
-app.use(`/merchant-api/${settings.apiVersion}/`, merchantRoutes);
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {

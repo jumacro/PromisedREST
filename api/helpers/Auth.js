@@ -4,7 +4,7 @@ import codes from '../../constants/codes';
 /** helpers */
 import Encrypt from '../helpers/Encrypt';
 
-const debug = require('debug')('ip-api:Helpers/Auth');
+const debug = require('debug')('promised-rest:Helpers/Auth');
 
 class Auth {
     constructor() {

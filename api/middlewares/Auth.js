@@ -4,7 +4,7 @@ import settings from '../../constants/settings';
 import statusCodes from '../../constants/codes';
 import User from '../models/User';
 
-const debug = require('debug')('ip-api:Middleware/Auth');
+const debug = require('debug')('promised-rest:Middleware/Auth');
 
 const authErr = statusCodes.http.error.auth;
 
@@ -23,7 +23,7 @@ const AuthStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
   
   
   User.findOne(jwtPayload.query)
-  .select('phone email isAdmin isMerchant isCustomer isActive')
+  .select('phone email isAdmin isCustomer isActive')
   .lean().exec()
   .then((foundUser) => {
     // const loggederr = { code: authErr.loggedIn };

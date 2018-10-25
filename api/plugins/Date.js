@@ -3,7 +3,7 @@
 import moment from 'moment';
 import tz from 'moment-timezone';
 
-const debug = require('debug')('yoloApi-v2:Plugins/Date');
+const debug = require('debug')('promised-rest:Plugins/Date');
 
 class DatePlugin {
   constructor() {

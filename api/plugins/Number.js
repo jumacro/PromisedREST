@@ -1,6 +1,6 @@
 // import moment from 'moment-timezone';
 
-const debug = require('debug')('yoloApi-v2:Plugins/Number');
+const debug = require('debug')('promised-rest:Plugins/Number');
 
 class NumberPlugin {
   constructor(num) {

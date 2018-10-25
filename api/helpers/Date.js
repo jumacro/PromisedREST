@@ -3,7 +3,7 @@
 import moment from 'moment';
 import tz from 'moment-timezone';
 
-const debug = require('debug')('ip-api:Helpers/Date');
+const debug = require('debug')('promised-rest:Helpers/Date');
 
 class DateHelper {
   constructor() {

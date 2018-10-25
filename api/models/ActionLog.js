@@ -5,7 +5,7 @@ import settings from '../../constants/settings';
 
 // const driverStatusCode = statusCode.driver;
 
-const debug = require('debug')('ip-api:Model/ActionLog');
+const debug = require('debug')('promised-rest:Model/ActionLog');
 
 
 const Schema = mongoose.Schema;

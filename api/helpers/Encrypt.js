@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const debug = require('debug')('ip-api:Helpers/Encrypt');
+const debug = require('debug')('promised-rest:Helpers/Encrypt');
 
 
 class Encrypt {

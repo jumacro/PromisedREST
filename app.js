@@ -3,7 +3,7 @@ import util from 'util';
 import envConfig from './env';
 import app from './config/express';
 
-const debug = require('debug')('ip-api:Settings/App');
+const debug = require('debug')('promised-rest:Settings/App');
 
 const port = process.env.PORT || envConfig.port;
 const env = process.env || envConfig.env;
@@ -42,7 +42,7 @@ app.disable('etag');
 if (!module.parent) {
   // listen on port port
   app.listen(port, () => {
-    debug(`ip-rest server started on port ${port} (${env})`);
+    debug(`promised-rest server started on port ${port} (${env})`);
   });
 }
 

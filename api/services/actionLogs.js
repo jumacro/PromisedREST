@@ -7,7 +7,7 @@ import ActionLog from '../models/ActionLog';
 import codes from '../../constants/codes';
 
 
-const debug = require('debug')('ip-api:Controller/Log');
+const debug = require('debug')('promised-rest:Controller/Log');
 
 /** create model object */
 const models = {
@@ -35,18 +35,7 @@ class Users extends Base {
     }
     this.model.logModel.add(logParams);
   }
-  
-  adminMerchantCreate(creatorId, recordId) {
-    const logParams = {
-      actionType: 'ADMIN',
-      actionCode: codes.actionCode.created,
-      module: 'MERCHANT',
-      moduleId: recordId,
-      userId: creatorId,
-      notes: `ADMIN-${creatorId} created Merchant ${recordId}`
-    }
-    this.model.logModel.add(logParams);
-  }
+
   
   adminCustomerCreate(creatorId, recordId) {
     const logParams = {
@@ -77,30 +66,6 @@ class Users extends Base {
       actionType: 'ADMIN',
       actionCode: codes.actionCode.deactivate,
       module: 'USER',
-      moduleId: userId,
-      userId: deactiverId,
-      notes: `${deactiverId} deactivated ${userId}`
-    };
-    this.model.logModel.add(logParams);
-  }
-  
-  activateMerchant(userId, activerId) {
-    const logParams = {
-      actionType: 'ADMIN',
-      actionCode: codes.actionCode.activate,
-      module: 'MERCHANT',
-      moduleId: userId,
-      userId: activerId,
-      notes: `${activerId} activated ${userId}`
-    };
-    this.model.logModel.add(logParams);
-  }
-  
-  deactivateMerchant(userId, deactiverId) {
-    const logParams = {
-      actionType: 'ADMIN',
-      actionCode: codes.actionCode.deactivate,
-      module: 'MERCHANT',
       moduleId: userId,
       userId: deactiverId,
       notes: `${deactiverId} deactivated ${userId}`
@@ -206,53 +171,6 @@ class Users extends Base {
     this.model.logModel.add(logParams);
   }
   
-  
-  
-  merchantLogin(loggedInUserId) {
-    const logParams = {
-      actionType: 'MERCHANT',
-      actionCode: codes.actionCode.login,
-      module: 'USER',
-      userId: loggedInUserId,
-      notes: `${loggedInUserId} logged in`
-    }
-    this.model.logModel.add(logParams);
-  }
-  
-  merchantLogout(loggedInUserId) {
-    const logParams = {
-      actionType: 'MERCHANT',
-      actionCode: codes.actionCode.logout,
-      module: 'USER',
-      userId: loggedInUserId,
-      notes: `${loggedInUserId} logged out`
-    }
-    this.model.logModel.add(logParams);
-  }
-  
-  merchantCategoryCreate(creatorId, recordId) {
-    const logParams = {
-      actionType: 'MERCHANT',
-      actionCode: codes.actionCode.created,
-      module: 'CATEGORY',
-      moduleId: recordId,
-      userId: creatorId,
-      notes: `MERCHANT-${creatorId} created Category ${recordId}`
-    }
-    this.model.logModel.add(logParams);
-  }
-  
-  merchantCategoryEdit(editorId, recordId) {
-    const logParams = {
-      actionType: 'MERCHANT',
-      actionCode: codes.actionCode.edited,
-      module: 'CATEGORY',
-      moduleId: recordId,
-      userId: editorId,
-      notes: `MERCHANT-${editorId} updated Category ${recordId}`
-    }
-    this.model.logModel.add(logParams);
-  }
   
   
   customerLogin(loggedInUserId) {

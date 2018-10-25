@@ -2,17 +2,16 @@
 
 ## Overview
 
-This is the REST API for Istanbul Pazarlari - A ecommerce portal.
-We have used yarn over npm.
-We have used Passport.js for Authentication.
+
+This is a boilerplate to create a RESTful Api with Nodejs, Express 4, ES6, Mongoose, MongoDB using Bluebird Promise. We have used yarn over npm. We have used Passport.js for Authentication.
 
 
 ## Getting Started
 
 Clone the repo:
 ```sh
-git clone https://github.com/yolotechnologies/ip-api.git
-cd ip-api
+git clone https://github.com/yolotechnologies/PromisedRest.git
+cd PromisedRest
 ```
 
 Install yarn:

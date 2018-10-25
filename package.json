@@ -1,9 +1,9 @@
 {
-  "name": "ip-api",
+  "name": "promised-rest",
   "version": "2.0.0",
-  "description": "REST API FOR IP ECOMMERCE PORTAL",
+  "description": "BOILER PLATE REST API",
   "main": "app.js",
-  "author": "localghost <mithun@localghosts.io>",
+  "author": "Mithun Das <mithun.das@jumacro.com>",
   "license": "MIT",
   "private": false,
   "engines": {
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ziac/ip-api.git"
+    "url": "https://github.com/jumacro/PromisedREST.git"
   },
   "dependencies": {
     "bluebird": "3.5.2",
